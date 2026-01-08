@@ -1,1 +1,37 @@
 
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local BASE = "https://cloudy-dove-90.lorln9.deno.net"
+local SCRIPT_URL = "https://raw.githubusercontent.com/LORLN9/Lord/refs/heads/main/Cmdbar"
+
+-- ✳️ حط المفتاح اللي نسخه اللاعب
+local USER_KEY = getgenv().LORLN_KEY
+if not USER_KEY then
+    player:Kick("No Key Provided")
+    return
+end
+
+-- 1️⃣ جلب المفتاح الصحيح من السيرفر
+local success, SERVER_KEY = pcall(function()
+    return HttpService:GetAsync(BASE .. "/key")
+end)
+
+if not success or not SERVER_KEY then
+    player:Kick("Key Server Error")
+    return
+end
+
+SERVER_KEY = SERVER_KEY:gsub("%s+", "")
+USER_KEY = USER_KEY:gsub("%s+", "")
+
+-- 2️⃣ مقارنة
+if USER_KEY ~= SERVER_KEY then
+    player:Kick("Invalid Key")
+    return
+end
+
+-- 3️⃣ تحميل السكربت الأساسي
+local scriptText = game:HttpGet(SCRIPT_URL)
+loadstring(scriptText)()
